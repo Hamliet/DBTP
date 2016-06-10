@@ -126,6 +126,10 @@ public class Order implements ActionListener{
 			ta1.setText("");
 			ta2.setText(("총 합계\n") + 0+"원");	
 		}
+		else if(e.getSource() == o_button1 && ta1.getText().equals("") ==true){
+			JOptionPane.showMessageDialog(null, (String) "메뉴를 선택해주세요.",
+					"pay denied", 2);//예외처리11
+		}
 		else if(e.getSource() == o_button1 && ta1.getText().equals("") ==false){
 			boolean customer_found= true;
 			if(o_tf.getText().equals("") ==false){
@@ -147,7 +151,7 @@ public class Order implements ActionListener{
 			}
 			if(customer_found ==false){
 				JOptionPane.showMessageDialog(null, (String) "존재하지 않는 고객입니다.",
-						"order denied", 2);
+						"order denied", 2);//예외처리9
 			}
 			else{
 				if(order_done[o_combo.getSelectedIndex()] == true ){
@@ -220,11 +224,17 @@ public class Order implements ActionListener{
 			}
 			
 		}
+		else if (e.getSource() == o_button3 && order_done[o_combo.getSelectedIndex()] == false){
+			JOptionPane.showMessageDialog(null, (String) "주문 먼저 해주세요.",
+					"pay denied", 2);//예외처리10
+		}
+		
 		else if (e.getSource() == o_button3 && order_done[o_combo.getSelectedIndex()] == true){
 			String c_name = null;
 			String grade = null;
 			String s_name = null;
 			int order_price = 0;
+			int c_acc_cost = 0;
 			//to get c_name
 			sqlStr = "select customer_name from ordered where table_num ="
 					+ (o_combo.getSelectedIndex()+1)
@@ -238,6 +248,8 @@ public class Order implements ActionListener{
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
 			}
+			
+			
 			if(c_name!= null){
 				//to get grade
 				sqlStr = "select customer_grade from customer where customer_name ='"
@@ -248,6 +260,19 @@ public class Order implements ActionListener{
 					ResultSet rs = stmt.executeQuery(sqlStr);
 					rs.next();
 					grade = rs.getString(1);
+				} catch (SQLException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				
+				sqlStr = "select customer_acc_cost from customer where customer_name ='"
+						+ c_name
+						+ "'";
+				try {
+					stmt = dbTest.prepareStatement(sqlStr);
+					ResultSet rs = stmt.executeQuery(sqlStr);
+					rs.next();
+					c_acc_cost = rs.getInt(1);
 				} catch (SQLException e2) {
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
@@ -297,6 +322,23 @@ public class Order implements ActionListener{
 			}
 			
 			//update customer
+			String new_grade = null;
+			int check_new_grade = c_acc_cost + order_price;
+			if(check_new_grade >= 1000000){
+				new_grade = "Gold";
+			}
+			else if(check_new_grade >= 500000){
+				new_grade = "Silver";
+			}
+			else if(check_new_grade >= 300000){
+				new_grade = "Bronze";
+			}
+			else{
+				new_grade = "Normal";
+			}
+
+			
+			
 			if(c_name !=null){
 				sqlStr = "update customer set customer_acc_cost = customer_acc_cost +"+ order_price +" where customer_name = '"
 						+ c_name
@@ -310,6 +352,18 @@ public class Order implements ActionListener{
 				}
 			}
 
+			if(c_name !=null){
+				sqlStr = "update customer set customer_grade = '"+ new_grade +"' where customer_name = '"
+						+ c_name
+						+ "'";
+				try {
+					stmt = dbTest.prepareStatement(sqlStr);
+					stmt.execute(sqlStr);
+				} catch (SQLException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+			}
 			
 			//update employee
 			sqlStr = "update employee set total = total +"+ order_price +" where employee_name = '"

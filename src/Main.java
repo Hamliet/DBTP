@@ -372,8 +372,8 @@ public class Main implements ActionListener {
 					
 					
 				} else {
-					JOptionPane.showMessageDialog(null, (String) "접속 실패",
-							"connect failed", 2);
+					JOptionPane.showMessageDialog(null, (String) "아이디와 패스워드를 확인해주세요.",
+							"connect failed", 2); //예외처리1
 				}
 			}
 
@@ -410,28 +410,7 @@ public class Main implements ActionListener {
 		PreparedStatement stmt = null;
 		String sqlStr = null;
 
-		// 이미 테이블이 존재 할 경우 삭제해주는 코드
-
-//		if(username.equals("system")){
-//			
-//			sqlStr = "drop table customer";
-//			stmt = dbTest.prepareStatement(sqlStr);
-//			stmt.executeQuery();
-//
-//			sqlStr = "drop table employee";
-//			stmt = dbTest.prepareStatement(sqlStr);
-//			stmt.executeQuery();
-//
-//			sqlStr = "drop table menu";
-//			stmt = dbTest.prepareStatement(sqlStr);
-//			stmt.executeQuery();
-//
-//			sqlStr = "drop table ordered";
-//			stmt = dbTest.prepareStatement(sqlStr);
-//			stmt.executeQuery();	
-//		}
-	
-
+		//예외처리22 
 		sqlStr = "create table customer (" + "customer_id number(5),"
 				+ "customer_name varchar2(12)," + "customer_birth number(5),"
 				+ "customer_phone_number number(5),"
@@ -439,28 +418,85 @@ public class Main implements ActionListener {
 				+ "customer_acc_cost number(9)," + "primary key(customer_name)"
 				+ ")";
 
-		stmt = dbTest.prepareStatement(sqlStr);
-		stmt.executeQuery();
+		try {
+			stmt = dbTest.prepareStatement(sqlStr);
+			stmt.executeQuery();
+		} catch (SQLException e) {
+			sqlStr = "drop table customer";
+			stmt = dbTest.prepareStatement(sqlStr);
+			stmt.executeQuery();
+		} finally{
+			sqlStr = "create table customer (" + "customer_id number(5),"
+					+ "customer_name varchar2(12)," + "customer_birth number(5),"
+					+ "customer_phone_number number(5),"
+					+ "customer_grade varchar2(10),"
+					+ "customer_acc_cost number(9)," + "primary key(customer_name)"
+					+ ")";
+			stmt = dbTest.prepareStatement(sqlStr);
+			stmt.executeQuery();
+		}
+		
 
 		sqlStr = "create table employee (" + "employee_id number(4),"
 				+ "employee_name varchar2(10),"
 				+ "employee_position varchar2(10), total number(11),"
 				+ "primary key(employee_name)" + ")";
-		stmt = dbTest.prepareStatement(sqlStr);
-		stmt.execute(sqlStr);
+		try {
+			stmt = dbTest.prepareStatement(sqlStr);
+			stmt.execute(sqlStr);
+		} catch (SQLException e) {
+			sqlStr = "drop table employee";
+			stmt = dbTest.prepareStatement(sqlStr);
+			stmt.executeQuery();
+		}finally{
+			sqlStr = "create table employee (" + "employee_id number(4),"
+					+ "employee_name varchar2(10),"
+					+ "employee_position varchar2(10), total number(11),"
+					+ "primary key(employee_name)" + ")";
+			stmt = dbTest.prepareStatement(sqlStr);
+			stmt.execute(sqlStr);
+		}
 
 		sqlStr = "create table menu (" + "menu_name varchar2(25),"
-				+ "menu_price number(10)," + "primary key(menu_name)" + ")";
-		stmt = dbTest.prepareStatement(sqlStr);
-		stmt.execute(sqlStr);
+				+ "menu_price number(6)," + "primary key(menu_name)" + ")";
+		try {
+			stmt = dbTest.prepareStatement(sqlStr);
+			stmt.execute(sqlStr);
+		} catch (SQLException e) {
+			sqlStr = "drop table menu";
+			stmt = dbTest.prepareStatement(sqlStr);
+			stmt.executeQuery();
+		} finally{
+			sqlStr = "create table menu (" + "menu_name varchar2(25),"
+					+ "menu_price number(6)," + "primary key(menu_name)" + ")";
+			stmt = dbTest.prepareStatement(sqlStr);
+			stmt.execute(sqlStr);
+			
+		}
 		sqlStr = "create table ordered (table_num number(2),"
-				+ " order_price number(10),"
+				+ " order_price number(20),"
 				+ " staff_name varchar2(12),"
 				+ " customer_name varchar2(12),"
 				+ "primary key(table_num)"
 				+ ")";
-		stmt = dbTest.prepareStatement(sqlStr);
-		stmt.execute(sqlStr);
+		try {
+			stmt = dbTest.prepareStatement(sqlStr);
+			stmt.execute(sqlStr);
+		} catch (SQLException e) {
+			sqlStr = "drop table ordered";
+			stmt = dbTest.prepareStatement(sqlStr);
+			stmt.executeQuery();	
+		}
+		finally{
+			sqlStr = "create table ordered (table_num number(2),"
+					+ " order_price number(20),"
+					+ " staff_name varchar2(12),"
+					+ " customer_name varchar2(12),"
+					+ "primary key(table_num)"
+					+ ")";
+			stmt = dbTest.prepareStatement(sqlStr);
+			stmt.execute(sqlStr);
+		}
 	}
 
 	public int rand_int(Node n) {
